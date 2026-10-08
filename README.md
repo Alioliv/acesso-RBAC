@@ -4,11 +4,23 @@ Projeto com Next.js, React e TypeScript no front-end e Express com MySQL no back
 
 ## Preparação
 
-1. Configure e inicie o back-end seguindo [backend/README.md](backend/README.md).
-2. Prepare a tabela de usuários com `backend/sql/users.sql` no banco configurado. Mantenha a tabela de materiais usada na aula.
-3. Na pasta `frontend/desi20251`, execute `npm install` e `npm run dev`.
-4. Abra http://localhost:3000, clique em **Cadastrar usuário** e crie uma conta com seus próprios dados.
-5. Faça login para consultar os materiais. Para testar administrador, siga a alteração de perfil no banco descrita no README do back-end.
+1. Instale e abra o Docker Desktop.
+2. Inicie o MySQL na raiz do projeto:
+
+   ```powershell
+   docker compose --env-file backend/.env up -d
+   ```
+
+   O banco e as tabelas são criados automaticamente na primeira inicialização.
+   O serviço usa as variáveis `DB_NAME` e `DB_PASSWORD` de `backend/.env`.
+3. Inicie o back-end seguindo [backend/README.md](backend/README.md).
+4. Na pasta `frontend/desi20251`, execute `npm install` e `npm run dev`.
+5. Abra http://localhost:3000, clique em **Cadastrar usuário** e crie uma conta com seus próprios dados.
+6. Faça login para consultar os materiais. Para testar administrador, siga a alteração de perfil no banco descrita no README do back-end.
+
+Para parar o banco sem apagar os dados, execute `docker compose stop`. Para
+iniciá-lo novamente, use `docker compose --env-file backend/.env up -d`.
+Os dados ficam no volume `mysql_data`; remover esse volume apaga o banco.
 
 No Windows, use `npm.cmd` se o PowerShell bloquear `npm.ps1`.
 

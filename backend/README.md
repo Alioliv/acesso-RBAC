@@ -4,10 +4,20 @@
 
 1. Instale as dependências com `npm install`.
 2. Configure `.env` usando `.env.example`: conexão com MySQL e `JWT_SECRET` com pelo menos 32 caracteres.
-3. No banco indicado em `DB_NAME`, execute `sql/users.sql`. O arquivo cria a tabela de usuários sem cadastrar contas prontas. Se ela já existir, confira os campos e o índice UNIQUE de e-mail; o script não modifica tabelas existentes.
-4. Execute `npm start`. A API usa a porta 8081 por padrão.
+3. Na raiz do projeto, inicie o MySQL com Docker:
 
-A listagem de materiais continua usando a tabela `materials` preparada na aula. O comando antigo `npm run seed` depende de um arquivo ausente neste projeto; use o SQL acima para preparar o cadastro.
+   ```powershell
+   docker compose --env-file backend/.env up -d
+   ```
+
+   O Compose cria o banco indicado em `DB_NAME` e executa `sql/users.sql` na
+   primeira inicialização. O script cria as tabelas de usuários e materiais e
+   insere materiais de exemplo, mas não cadastra contas prontas.
+4. Execute `npm start`. A API usa a porta 8081 por padrão e conecta ao banco em `localhost`.
+
+Se já houver um banco no volume, o MySQL não executa novamente os scripts de
+inicialização. O comando antigo `npm run seed` depende de um arquivo ausente
+neste projeto.
 
 ## Cadastro explicado
 
