@@ -12,14 +12,22 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS materials (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
-  description TEXT,
+  category VARCHAR(100) NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO materials (name, description) VALUES
-('Material 1', 'Primeiro material de teste'),
-('Material 2', 'Segundo material de teste'),
-('Material 3', 'Terceiro material de teste'); 
+INSERT INTO materials (name, category)
+SELECT samples.name, samples.category
+FROM (
+  SELECT 'Material 1' AS name, 'Limpeza' AS category
+  UNION ALL
+  SELECT 'Material 2', 'Higiene'
+  UNION ALL
+  SELECT 'Material 3', 'Equipamentos'
+) AS samples
+WHERE NOT EXISTS (
+  SELECT 1 FROM materials WHERE materials.name = samples.name
+);
 
 -- Se a tabela já existir, confira sua estrutura com SHOW CREATE TABLE users.
 -- Ela precisa dos campos acima e de uma restrição UNIQUE para email.
