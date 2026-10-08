@@ -8,6 +8,7 @@ export const loginRateLimit = rateLimit({
   skipSuccessfulRequests: true, // só conta tentativas que falharam
   standardHeaders: "draft-7",
   legacyHeaders: false,
+  keyGenerator: (req) => String(req.body?.email || "").trim().toLowerCase(), // bloqueia por e-mail, não por IP como a biblioteca faz automaticamente 
   handler: (req, res) => {
     const liberaEm = req.rateLimit.resetTime; // Momento exato em que o bloqueio termina
     const segundos = Math.max(1, Math.ceil((liberaEm - Date.now()) / 1000));
