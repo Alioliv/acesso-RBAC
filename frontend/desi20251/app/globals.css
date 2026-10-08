@@ -35,8 +35,12 @@ button:disabled { opacity: 0.6; cursor: default; }
 /* flex-wrap permite quebrar os itens em linhas nas telas pequenas. */
 .actions, .materials li { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 .materials { list-style: none; padding: 0; }
+.tabs { max-width: 720px; margin: 24px auto -8px; display: flex; gap: 8px; }
+.search { margin: 16px 0; }
+.search .actions input { flex: 1; }
 .materials li { justify-content: space-between; padding: 16px 0; border-bottom: 1px solid #d1d5db; }
 .materials span, .actions p { overflow-wrap: anywhere; }
 @media (max-width: 760px) {
   .panel { margin: 16px; padding: 16px; }
+  .tabs { margin: 16px 16px -8px; }
 }

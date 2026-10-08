@@ -5,6 +5,8 @@ import { fileURLToPath } from "node:url";
 import { db } from "./config/database.js";
 import authRouter from "./routers/auth.js";
 import materialsRouter from "./routers/materials.js";
+import productsRouter from "./routers/products.js";
+
 
 dotenv.config();
 
@@ -22,6 +24,7 @@ app.use(express.static(fileURLToPath(new URL("../public", import.meta.url))));
 // Cada recurso tem seu proprio router.
 app.use("/api", authRouter);
 app.use("/api/materials", materialsRouter);
+app.use("/api/products", productsRouter);
 
 // Erros dos controllers chegam aqui, inclusive nas funções async (Express 5).
 app.use((err, req, res, next) => {

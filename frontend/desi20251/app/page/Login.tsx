@@ -5,6 +5,7 @@ import { useState, type FormEvent } from "react";
 import { login, type Session } from "../services/login";
 import { errorMessage } from "../services/api";
 import Home from "./Home";
+import Products from "./Products";
 import Register from "./Register";
 
 export default function Login() {
@@ -17,6 +18,16 @@ export default function Login() {
   const [busy, setBusy] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [notice, setNotice] = useState("");
+  // Qual cadastro aparece depois do login.
+  const [view, setView] = useState<"materials" | "products">("materials");
+
+  // Encerra a sessão e volta para a tela de login.
+  function logout() {
+    setSession(null);
+    setEmail("");
+    setPassword("");
+    setView("materials");
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); // Evita recarregar a página ao enviar o formulário.
@@ -40,11 +51,15 @@ export default function Login() {
       <header>Controle de materiais · Aula de login e permissões</header>
       {/* Sem sessão mostramos o login; com sessão mostramos os materiais. */}
       {session ? (
-        <Home session={session} onLogout={() => {
-          setSession(null);
-          setEmail("");
-          setPassword("");
-        }} />
+        <>
+          <nav className="tabs" aria-label="Cadastros">
+            <button className={view === "materials" ? "" : "secondary"} onClick={() => setView("materials")}>Materiais</button>
+            <button className={view === "products" ? "" : "secondary"} onClick={() => setView("products")}>Produtos</button>
+          </nav>
+          {view === "products"
+            ? <Products session={session} onLogout={logout} />
+            : <Home session={session} onLogout={logout} />}
+        </>
       ) : showRegister ? (
         <Register onBack={() => setShowRegister(false)} onRegistered={message => {
           setShowRegister(false);
