@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { api, errorMessage } from "../services/api";
 import type { Session } from "../services/login";
+import Comments from "./Comments";
 
 // Campos devolvidos por GET /materials.
 type Material = { id: number; name: string; category: string };
@@ -16,6 +17,7 @@ export default function Home({ session, onLogout }: Props) {
   const [deleting, setDeleting] = useState<number | null>(null);
   const [revision, setRevision] = useState(0);
   const isAdmin = session.user.role === "admin";
+  const [selected, setSelected] = useState<Material | null>(null);
 
   // Busca os materiais ao entrar e quando Atualizar muda revision.
   useEffect(() => {
@@ -35,14 +37,16 @@ export default function Home({ session, onLogout }: Props) {
       }
     }
     loadMaterials();
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [session.token, revision]);
 
   function refresh() {
     setLoading(true);
     setError("");
     setNotice("");
-    setRevision(current => current + 1);
+    setRevision((current) => current + 1);
   }
 
   async function remove(material: Material) {
@@ -56,7 +60,9 @@ export default function Home({ session, onLogout }: Props) {
         headers: { Authorization: `Bearer ${session.token}` },
       });
       // Só remove da tela depois que a API confirma a exclusão (HTTP 204).
-      setMaterials(current => current.filter(item => item.id !== material.id));
+      setMaterials((current) =>
+        current.filter((item) => item.id !== material.id),
+      );
       setNotice(`${material.name} excluído.`);
     } catch (error) {
       setError(errorMessage(error));
@@ -65,41 +71,109 @@ export default function Home({ session, onLogout }: Props) {
     }
   }
 
+  if (selected) {
+    return (
+      <Comments
+        session={session}
+        material={selected}
+        onBack={() => setSelected(null)}
+      />
+    );
+  }
+
   return (
     <section className="panel" aria-labelledby="materials-title">
       <div className="actions">
-        <p><strong>{session.user.name}</strong> · {session.user.email}</p>
-        <button className="secondary" onClick={onLogout}>Sair</button>
+        <p>
+          <strong>{session.user.name}</strong> · {session.user.email}
+        </p>
+        <button className="secondary" onClick={onLogout}>
+          Sair
+        </button>
       </div>
       <h1 id="materials-title">Materiais</h1>
-      <p>Perfil: <strong>{isAdmin ? "Administrador (admin)" : "Usuário comum (user)"}</strong></p>
-      <p>{isAdmin ? "Você pode consultar e excluir materiais." : "Você pode apenas consultar os materiais."}</p>
-      <p className="muted">Para comparar os perfis, saia e entre com a outra conta.</p>
-      <button className="secondary" disabled={loading || deleting !== null} onClick={refresh}>
+      <p>
+        Perfil:{" "}
+        <strong>
+          {isAdmin ? "Administrador (admin)" : "Usuário comum (user)"}
+        </strong>
+      </p>
+      <p>
+        {isAdmin
+          ? "Você pode consultar e excluir materiais."
+          : "Você pode apenas consultar os materiais."}
+      </p>
+      <p className="muted">
+        Para comparar os perfis, saia e entre com a outra conta.
+      </p>
+      <button
+        className="secondary"
+        disabled={loading || deleting !== null}
+        onClick={refresh}
+      >
         Atualizar materiais
       </button>
-      {error && <p className="error" role="alert">{error}</p>}
-      {notice && <p className="success" role="status">{notice}</p>}
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
+      {notice && (
+        <p className="success" role="status">
+          {notice}
+        </p>
+      )}
       {loading ? (
         <p role="status">Carregando materiais...</p>
       ) : (
         <ul className="materials">
-          {materials.map(material => (
+          {materials.map((material) => (
             <li key={material.id}>
-              <span><strong>{material.name}</strong> · {material.category}</span>
+              <span>
+                <strong>{material.name}</strong> · {material.category}
+              </span>
               {/* Esconder o botão ajuda na interface; a proteção fica na API. */}
               {isAdmin ? (
-                <button className="danger" disabled={deleting !== null} onClick={() => remove(material)}>
+                <button
+                  className="danger"
+                  disabled={deleting !== null}
+                  onClick={() => remove(material)}
+                >
                   {deleting === material.id ? "Excluindo..." : "Excluir"}
                 </button>
               ) : (
-                <span className="muted">Somente leitura</span>
+                <span className="muted">
+                  <span>
+                    <strong>{material.name}</strong> · {material.category}
+                  </span>
+                  <div className="actions">
+                    <button
+                      className="secondary"
+                      onClick={() => setSelected(material)}
+                    >
+                      Comentários
+                    </button>
+                    {isAdmin ? (
+                      <button
+                        className="danger"
+                        disabled={deleting !== null}
+                        onClick={() => remove(material)}
+                      >
+                        {deleting === material.id ? "Excluindo..." : "Excluir"}
+                      </button>
+                    ) : (
+                      <span className="muted">Somente leitura</span>
+                    )}
+                  </div>
+                </span>
               )}
             </li>
           ))}
         </ul>
       )}
-      {!loading && !error && materials.length === 0 && <p>Nenhum material cadastrado.</p>}
+      {!loading && !error && materials.length === 0 && (
+        <p>Nenhum material cadastrado.</p>
+      )}
     </section>
   );
 }
