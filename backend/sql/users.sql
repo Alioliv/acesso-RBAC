@@ -1,5 +1,4 @@
--- Execute no banco configurado em DB_NAME antes de usar o cadastro.
--- Não cria contas prontas e não apaga uma tabela que já exista.
+USE desi_20251;
 
 CREATE TABLE IF NOT EXISTS users (
   id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -29,5 +28,11 @@ WHERE NOT EXISTS (
   SELECT 1 FROM materials WHERE materials.name = samples.name
 );
 
--- Se a tabela já existir, confira sua estrutura com SHOW CREATE TABLE users.
--- Ela precisa dos campos acima e de uma restrição UNIQUE para email.
+CREATE TABLE IF NOT EXISTS material_comments (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  material_id INT NOT NULL,
+  user_id INT NOT NULL,
+  content VARCHAR(1000) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_comments_material_created (material_id, created_at)
+) CHARACTER SET utf8mb4;
