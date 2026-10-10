@@ -1,12 +1,16 @@
 import { Router } from "express";
 import { listMaterials, deleteMaterial } from "../controllers/materials.js";
+import { listComments, createComment } from "../controllers/comments.js";
 import { authenticate, requireRole } from "../middleware/auth.js";
 
 const router = Router();
-// AUTENTICA??O: todas as rotas abaixo exigem um token v?lido.
+// Todas as rotas abaixo exigem um token válido.
 router.use(authenticate);
-// Admin e usu?rio podem consultar.
+// Admin e usuário podem consultar.
 router.get("/", listMaterials);
-// AUTORIZA??O (RBAC): apenas o perfil admin pode excluir.
+// Comentários de um material.
+router.get("/:id/comments", listComments);
+router.post("/:id/comments", createComment);
+// Apenas admin pode excluir.
 router.delete("/:id", requireRole("admin"), deleteMaterial);
 export default router;
