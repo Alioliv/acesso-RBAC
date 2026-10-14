@@ -5,6 +5,8 @@ import { fileURLToPath } from "node:url";
 import { db } from "./config/database.js";
 import authRouter from "./routers/auth.js";
 import materialsRouter from "./routers/materials.js";
+import productsRouter from "./routers/products.js";
+
 
 dotenv.config();
 
@@ -17,6 +19,7 @@ app.use(express.static(fileURLToPath(new URL("../public", import.meta.url))));
 
 app.use("/api", authRouter);
 app.use("/api/materials", materialsRouter);
+app.use("/api/products", productsRouter);
 
 app.use((err, req, res, next) => {
   if (err.type === "entity.parse.failed") {
@@ -31,4 +34,5 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "Erro interno. Verifique o servidor e o banco." });
 });
 
+// server.js importa esta aplicacao e abre a porta HTTP.
 export default app;
